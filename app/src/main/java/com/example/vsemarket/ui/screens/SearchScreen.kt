@@ -16,6 +16,11 @@ import com.example.vsemarket.ui.components.ProductCard
 import com.example.vsemarket.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Фрагмент результатов поиска.
+ * Показывает результаты поиска по запросу.
+ */
+
 @Composable
 fun SearchScreen(viewModel: SearchViewModel, query: String, navController: NavController) {
     val searchResults = viewModel.searchResults.collectAsState().value

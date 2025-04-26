@@ -28,6 +28,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Color
 import com.example.vsemarket.PaymentActivity
 
+/**
+ * Фрагмент отображения корзины пользователя.
+ * Отвечает за отображение списка товаров в корзине, изменение количества и удаление товаров.
+ */
+
 @Composable
 fun CartScreen(viewModel: CartViewModel) {
     val cartItems = viewModel.cartItems.collectAsState().value

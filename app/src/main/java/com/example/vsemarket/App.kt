@@ -3,6 +3,11 @@ package com.example.vsemarket
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 
+/**
+ * Главный класс приложения, наследуется от Application.
+ * Используется для инициализации глобальных настроек при запуске приложения.
+ */
+
 class App : Application() {
     var darkTheme = false
 

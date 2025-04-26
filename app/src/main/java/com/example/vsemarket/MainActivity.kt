@@ -28,6 +28,10 @@ import com.example.vsemarket.utils.ThemeManager
 import com.example.vsemarket.viewmodel.*
 import kotlinx.coroutines.launch
 
+/**
+ * Основная активность приложения, отображает главный интерфейс пользователя.
+ */
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

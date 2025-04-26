@@ -4,6 +4,11 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
+/**
+ * Интерфейс для определения методов доступа к данным корзины.
+ * Пример репозитория или DAO-слоя для взаимодействия с корзиной.
+ */
+
 object Persistence {
     private const val PROFILE_PREFS = "profile_prefs"
     private const val SEARCH_HISTORY_PREFS = "search_history_prefs"

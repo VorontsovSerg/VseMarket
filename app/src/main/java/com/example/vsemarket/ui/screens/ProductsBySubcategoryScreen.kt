@@ -17,6 +17,11 @@ import com.example.vsemarket.data.ProductData
 import com.example.vsemarket.ui.components.ProductCard
 import com.example.vsemarket.viewmodel.CatalogViewModel
 
+/**
+ * Фрагмент с товарами подкатегории.
+ * Показывает товары определенной подкатегории.
+ */
+
 @Composable
 fun ProductsBySubcategoryScreen(
     viewModel: CatalogViewModel,

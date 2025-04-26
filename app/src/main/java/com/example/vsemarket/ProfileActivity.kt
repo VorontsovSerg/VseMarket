@@ -34,6 +34,11 @@ import com.example.vsemarket.ui.screens.EditProfileScreen
 import com.example.vsemarket.utils.ThemeManager
 import java.util.UUID
 
+/**
+ * Активность профиля пользователя.
+ * Позволяет просматривать и редактировать информацию о пользователе.
+ */
+
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -2,6 +2,11 @@ package com.example.vsemarket.data
 
 import android.content.Context
 
+/**
+ * Реализация интерфейса ProductApi.
+ * Отвечает за получение данных о товарах (локально или через сеть).
+ */
+
 class ProductApiImpl(private val context: Context) : ProductApi {
     override suspend fun getNewProducts(): List<Product> {
         return ProductData.products.filter { it.id in listOf(1, 2) }

@@ -1,5 +1,10 @@
 package com.example.vsemarket.data
 
+/**
+ * Модель категории товаров.
+ * Используется для классификации товаров по группам.
+ */
+
 data class Category(
     val name: String,
     val subcategories: List<Subcategory>,

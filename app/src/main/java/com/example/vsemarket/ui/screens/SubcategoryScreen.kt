@@ -16,6 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.vsemarket.data.Category
 
+/**
+ * Фрагмент с подкатегориями.
+ * Показывает подкатегории определенной категории.
+ */
+
 @Composable
 fun SubcategoryScreen(category: Category, navController: NavController) {
     Column(

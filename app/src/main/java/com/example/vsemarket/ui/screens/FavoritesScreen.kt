@@ -17,6 +17,11 @@ import com.example.vsemarket.data.ProductData
 import com.example.vsemarket.ui.components.ProductCard
 import com.example.vsemarket.viewmodel.FavoritesViewModel
 
+/**
+ * Фрагмент избранного.
+ * Показывает товары которые были добавлены в избранное.
+ */
+
 @Composable
 fun FavoritesScreen(viewModel: FavoritesViewModel, navController: NavController) {
     val favorites = viewModel.favorites.collectAsState().value

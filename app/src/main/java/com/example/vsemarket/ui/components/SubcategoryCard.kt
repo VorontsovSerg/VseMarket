@@ -12,6 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.vsemarket.data.Subcategory
 
+/**
+ * Компонент карты подкатегории.
+ * Карта которая привязана будет к определенной подкатегории и будет настроена.
+ */
+
 @Composable
 fun SubcategoryCard(subcategory: Subcategory, onClick: () -> Unit) {
     Box(

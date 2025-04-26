@@ -26,6 +26,11 @@ import com.example.vsemarket.viewmodel.SearchViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * Компонент результатов поиска по запросу.
+ * Покажет число выведенных товаров по запросу и их список.
+ */
+
 @Composable
 fun SearchResults(
     query: String,
@@ -140,7 +145,6 @@ fun ProductCard(
     }
 }
 
-// Функция для определения яркости цвета
 private fun isColorLight(color: Color): Boolean {
     val luminance = (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue)
     return luminance > 0.5

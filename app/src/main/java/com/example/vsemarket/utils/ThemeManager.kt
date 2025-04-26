@@ -10,6 +10,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import com.example.vsemarket.MainActivity
 
+/**
+ * Менеджер темы приложения.
+ * Управляет переключением между светлой и тёмной темой в зависимости от настроек пользователя.
+ * Предоставляет функции для применения и сохранения состояния темы.
+ */
+
 object ThemeManager {
     private const val PREFS_NAME = "theme_prefs"
     private const val KEY_THEME = "is_dark_theme"

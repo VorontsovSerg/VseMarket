@@ -20,6 +20,11 @@ import com.example.vsemarket.viewmodel.CartViewModel
 import com.example.vsemarket.viewmodel.FavoritesViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Фрагмент подробной информации о товаре.
+ * Показывает описание, цену, наличие товара и кнопку добавления в корзину.
+ */
+
 @Composable
 fun ProductDetailScreen(
     product: Product,

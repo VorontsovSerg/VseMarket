@@ -2,6 +2,11 @@ package com.example.vsemarket.data
 
 import androidx.room.Entity
 
+/**
+ * Модель товара в магазине.
+ * Содержит описание товара: название, цена, категория и другие атрибуты.
+ */
+
 @Entity(tableName = "products")
 data class Product(
     val id: Int,

@@ -29,6 +29,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.vsemarket.utils.ThemeManager
 
+/**
+ * Активность для обработки процесса оплаты.
+ * Отображает интерфейс оплаты и обрабатывает действия пользователя.
+ */
+
 class PaymentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

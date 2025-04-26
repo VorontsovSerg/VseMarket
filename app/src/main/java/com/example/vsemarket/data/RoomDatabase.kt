@@ -3,6 +3,11 @@ package com.example.vsemarket.data
 import android.content.Context
 import androidx.room.*
 
+/**
+ * Абстрактный класс базы данных Room.
+ * Описывает конфигурацию локальной БД и доступ к DAO-объектам.
+ */
+
 @Entity(tableName = "orders")
 data class OrderData(
     @PrimaryKey(autoGenerate = true) val orderId: Int = 0,

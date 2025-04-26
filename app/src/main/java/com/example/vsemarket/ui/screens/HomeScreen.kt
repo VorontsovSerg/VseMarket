@@ -17,6 +17,11 @@ import com.example.vsemarket.ui.components.ProductCard
 import com.example.vsemarket.viewmodel.FavoritesViewModel
 import com.example.vsemarket.viewmodel.MainViewModel
 
+/**
+ * Фрагмент главного экрана.
+ * Основной экран который показывается при старте.
+ */
+
 @Composable
 fun HomeScreen(viewModel: MainViewModel, navController: NavController, favoritesViewModel: FavoritesViewModel) {
     val newProducts = viewModel.newProducts.collectAsState().value

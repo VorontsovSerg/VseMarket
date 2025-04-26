@@ -23,6 +23,11 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.vsemarket.data.Persistence
 import com.example.vsemarket.data.ProfileData
 
+/**
+ * Фрагмент редактирования профился.
+ * Поозволяет отредактировать информацию в профиле.
+ */
+
 @Composable
 fun EditProfileScreen(
     navController: NavController,
