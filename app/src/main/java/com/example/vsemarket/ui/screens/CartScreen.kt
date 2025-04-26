@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.fooddelivery.data.CartItem
-import com.example.fooddelivery.viewmodel.CartViewModel
+import com.example.vsemarket.data.CartItem
+import com.example.vsemarket.viewmodel.CartViewModel
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.Dp
 import android.content.Intent
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Color
-import com.example.fooddelivery.PaymentActivity
+import com.example.vsemarket.PaymentActivity
 
 @Composable
 fun CartScreen(viewModel: CartViewModel) {

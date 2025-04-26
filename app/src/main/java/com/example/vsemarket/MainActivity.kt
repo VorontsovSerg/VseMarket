@@ -18,14 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.fooddelivery.data.FoodApiImpl
-import com.example.fooddelivery.data.Product
-import com.example.fooddelivery.ui.components.BottomNavigationBar
-import com.example.fooddelivery.ui.components.SearchBar
-import com.example.fooddelivery.ui.components.SearchResults
-import com.example.fooddelivery.ui.screens.*
-import com.example.fooddelivery.utils.ThemeManager
-import com.example.fooddelivery.viewmodel.*
+import com.example.vsemarket.data.ProductApiImpl
+import com.example.vsemarket.data.Product
+import com.example.vsemarket.ui.components.BottomNavigationBar
+import com.example.vsemarket.ui.components.SearchBar
+import com.example.vsemarket.ui.components.SearchResults
+import com.example.vsemarket.ui.screens.*
+import com.example.vsemarket.utils.ThemeManager
+import com.example.vsemarket.viewmodel.*
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -52,7 +52,7 @@ fun FoodDeliveryApp() {
     var isSearchFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    val api = FoodApiImpl(context)
+    val api = ProductApiImpl(context)
     val mainViewModel = MainViewModel(api)
     val catalogViewModel = CatalogViewModel(api)
     val favoritesViewModel = FavoritesViewModel(context)

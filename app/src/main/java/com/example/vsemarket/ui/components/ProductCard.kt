@@ -18,8 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.fooddelivery.data.Product
-import com.example.fooddelivery.data.Subcategory
+import com.example.vsemarket.data.Product
+import com.example.vsemarket.data.Subcategory
 
 @Composable
 fun ProductCard(

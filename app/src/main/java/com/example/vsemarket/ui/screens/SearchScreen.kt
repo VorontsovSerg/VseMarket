@@ -11,9 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.fooddelivery.data.FoodData
-import com.example.fooddelivery.ui.components.ProductCard
-import com.example.fooddelivery.viewmodel.SearchViewModel
+import com.example.vsemarket.data.ProductData
+import com.example.vsemarket.ui.components.ProductCard
+import com.example.vsemarket.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -22,7 +22,7 @@ fun SearchScreen(viewModel: SearchViewModel, query: String, navController: NavCo
     val searchError = viewModel.searchError.collectAsState().value
     val scope = rememberCoroutineScope()
     var lastQuery by remember { mutableStateOf(query) }
-    val subcategories = FoodData.categories.flatMap { it.subcategories }
+    val subcategories = ProductData.categories.flatMap { it.subcategories }
 
     LaunchedEffect(query) {
         if (query.isNotEmpty()) {

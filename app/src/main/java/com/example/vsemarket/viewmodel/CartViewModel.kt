@@ -2,9 +2,9 @@ package com.example.vsemarket.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.example.fooddelivery.data.CartItem
-import com.example.fooddelivery.data.Persistence
-import com.example.fooddelivery.data.Product
+import com.example.vsemarket.data.CartItem
+import com.example.vsemarket.data.Persistence
+import com.example.vsemarket.data.Product
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

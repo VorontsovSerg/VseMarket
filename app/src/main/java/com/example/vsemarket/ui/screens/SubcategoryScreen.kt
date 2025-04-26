@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.fooddelivery.data.Category
+import com.example.vsemarket.data.Category
 
 @Composable
 fun SubcategoryScreen(category: Category, navController: NavController) {

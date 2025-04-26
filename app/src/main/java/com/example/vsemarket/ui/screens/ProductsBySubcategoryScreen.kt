@@ -13,9 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.fooddelivery.data.FoodData
-import com.example.fooddelivery.ui.components.ProductCard
-import com.example.fooddelivery.viewmodel.CatalogViewModel
+import com.example.vsemarket.data.ProductData
+import com.example.vsemarket.ui.components.ProductCard
+import com.example.vsemarket.viewmodel.CatalogViewModel
 
 @Composable
 fun ProductsBySubcategoryScreen(
@@ -25,7 +25,7 @@ fun ProductsBySubcategoryScreen(
     navController: NavController
 ) {
     val products = viewModel.getProductsBySubcategory(categoryName, subcategoryName).collectAsState().value
-    val subcategories = FoodData.categories.flatMap { it.subcategories }
+    val subcategories = ProductData.categories.flatMap { it.subcategories }
 
     Column(
         modifier = Modifier

@@ -2,15 +2,15 @@ package com.example.vsemarket.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fooddelivery.data.Category
-import com.example.fooddelivery.data.FoodApi
-import com.example.fooddelivery.data.Product
+import com.example.vsemarket.data.Category
+import com.example.vsemarket.data.ProductApi
+import com.example.vsemarket.data.Product
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CatalogViewModel(private val api: FoodApi) : ViewModel() {
+class CatalogViewModel(private val api: ProductApi) : ViewModel() {
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
 

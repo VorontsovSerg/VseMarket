@@ -28,10 +28,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.fooddelivery.data.Persistence
-import com.example.fooddelivery.data.ProfileData
-import com.example.fooddelivery.ui.screens.EditProfileScreen
-import com.example.fooddelivery.utils.ThemeManager
+import com.example.vsemarket.data.Persistence
+import com.example.vsemarket.data.ProfileData
+import com.example.vsemarket.ui.screens.EditProfileScreen
+import com.example.vsemarket.utils.ThemeManager
 
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

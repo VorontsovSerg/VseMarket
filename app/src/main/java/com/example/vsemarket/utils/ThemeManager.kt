@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
-import com.example.fooddelivery.MainActivity
+import com.example.vsemarket.MainActivity
 
 object ThemeManager {
     private const val PREFS_NAME = "theme_prefs"

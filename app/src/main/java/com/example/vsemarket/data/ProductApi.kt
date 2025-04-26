@@ -1,6 +1,6 @@
 package com.example.vsemarket.data
 
-interface FoodApi {
+interface ProductApi {
     suspend fun getNewProducts(): List<Product>
     suspend fun getRecommendedProducts(): List<Product>
     suspend fun getCategories(): List<Category>

@@ -15,9 +15,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.fooddelivery.data.Product
-import com.example.fooddelivery.viewmodel.CartViewModel
-import com.example.fooddelivery.viewmodel.FavoritesViewModel
+import com.example.vsemarket.data.Product
+import com.example.vsemarket.viewmodel.CartViewModel
+import com.example.vsemarket.viewmodel.FavoritesViewModel
 import kotlinx.coroutines.launch
 
 @Composable

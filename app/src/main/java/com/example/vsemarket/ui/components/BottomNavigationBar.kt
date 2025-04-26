@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.fooddelivery.ProfileActivity
+import com.example.vsemarket.ProfileActivity
 
 @Composable
 fun BottomNavigationBar(navController: NavController, onNavigate: (String) -> Unit = {}) {

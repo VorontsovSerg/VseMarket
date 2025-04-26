@@ -11,8 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.fooddelivery.data.Persistence
-import com.example.fooddelivery.data.ProfileData
+import com.example.vsemarket.data.Persistence
+import com.example.vsemarket.data.ProfileData
 
 @Composable
 fun EditProfileScreen(

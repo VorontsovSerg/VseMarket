@@ -1,6 +1,6 @@
 package com.example.vsemarket.data
 
-object FoodData {
+object ProductData {
     val products = listOf(
         Product(
             id = 1,

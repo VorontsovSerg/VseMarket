@@ -19,8 +19,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.fooddelivery.data.Category
-import com.example.fooddelivery.viewmodel.CatalogViewModel
+import com.example.vsemarket.data.Category
+import com.example.vsemarket.viewmodel.CatalogViewModel
 
 @Composable
 fun CatalogScreen(viewModel: CatalogViewModel, navController: NavController) {

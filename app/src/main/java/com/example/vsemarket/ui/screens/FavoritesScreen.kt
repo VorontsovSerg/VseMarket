@@ -13,14 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.fooddelivery.data.FoodData
-import com.example.fooddelivery.ui.components.ProductCard
-import com.example.fooddelivery.viewmodel.FavoritesViewModel
+import com.example.vsemarket.data.ProductData
+import com.example.vsemarket.ui.components.ProductCard
+import com.example.vsemarket.viewmodel.FavoritesViewModel
 
 @Composable
 fun FavoritesScreen(viewModel: FavoritesViewModel, navController: NavController) {
     val favorites = viewModel.favorites.collectAsState().value
-    val subcategories = FoodData.categories.flatMap { it.subcategories }
+    val subcategories = ProductData.categories.flatMap { it.subcategories }
 
     if (favorites.isEmpty()) {
         Box(
