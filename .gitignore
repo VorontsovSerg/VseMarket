@@ -2,6 +2,9 @@
 .gradle/
 build/
 
+# Include dokka folder in build directory
+!build/dokka/
+
 # Local configuration file (sdk path, etc)
 local.properties
 
