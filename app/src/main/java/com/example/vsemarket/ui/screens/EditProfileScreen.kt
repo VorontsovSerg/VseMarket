@@ -1,16 +1,25 @@
 package com.example.vsemarket.ui.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.vsemarket.data.Persistence
 import com.example.vsemarket.data.ProfileData
 
@@ -20,10 +29,15 @@ fun EditProfileScreen(
     initialProfile: ProfileData,
     onProfileUpdated: (ProfileData) -> Unit
 ) {
-    var username by remember { mutableStateOf(initialProfile.username) }
+    var userName by remember { mutableStateOf(initialProfile.userName) }
     var email by remember { mutableStateOf(initialProfile.email) }
     var phone by remember { mutableStateOf(initialProfile.phone ?: "") }
+    var avatarUri by remember { mutableStateOf(initialProfile.avatarUri) }
     val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        avatarUri = uri?.toString()
+    }
 
     Column(
         modifier = Modifier
@@ -39,9 +53,34 @@ fun EditProfileScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surface)
+                .clickable { launcher.launch("image/*") },
+            contentAlignment = Alignment.Center
+        ) {
+            if (avatarUri != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(avatarUri),
+                    contentDescription = "Profile Avatar",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(
+                    text = "Выбрать аватар",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
+            value = userName,
+            onValueChange = { userName = it },
             label = { Text("Имя") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -98,10 +137,11 @@ fun EditProfileScreen(
             Button(
                 onClick = {
                     val updatedProfile = ProfileData(
-                        username = username,
+                        userId = initialProfile.userId,
+                        userName = userName,
                         email = email,
-                        phone = phone,
-                        avatarUri = initialProfile.avatarUri
+                        phone = phone.ifEmpty { null },
+                        avatarUri = avatarUri
                     )
                     Persistence.saveProfile(context, updatedProfile)
                     onProfileUpdated(updatedProfile)

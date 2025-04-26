@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="blue_primary">#2196F3</color> <!-- Синий для primary -->
+    <color name="blue_on_primary">#FFFFFF</color> <!-- Белый текст на синем -->
+    <color name="blue_background">#FFFFFF</color> <!-- Белый фон для светлой темы -->
+    <color name="blue_on_background">#000000</color> <!-- Черный текст на белом -->
+    <color name="blue_surface">#FFFFFF</color> <!-- Белый для поверхностей -->
+    <color name="blue_on_surface">#000000</color> <!-- Черный для текста на поверхностях -->
+
+    <!-- Темная тема -->
+    <color name="blue_primary_dark">#1976D2</color> <!-- Темно-синий для темной темы -->
+    <color name="blue_on_primary_dark">#FFFFFF</color> <!-- Белый текст на темно-синем -->
+    <color name="blue_background_dark">#121212</color> <!-- Темный фон -->
+    <color name="blue_on_background_dark">#FFFFFF</color> <!-- Белый текст на темном -->
+    <color name="blue_surface_dark">#1C1C1C</color> <!-- Темная поверхность -->
+    <color name="blue_on_surface_dark">#FFFFFF</color> <!-- Белый текст на темной поверхности -->
 </resources>

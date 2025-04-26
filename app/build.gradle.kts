@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     id("org.jetbrains.dokka") version "1.8.10"
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -44,6 +45,8 @@ android {
 }
 
 dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-analytics")
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

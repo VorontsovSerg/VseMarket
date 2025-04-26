@@ -32,6 +32,7 @@ import com.example.vsemarket.data.Persistence
 import com.example.vsemarket.data.ProfileData
 import com.example.vsemarket.ui.screens.EditProfileScreen
 import com.example.vsemarket.utils.ThemeManager
+import java.util.UUID
 
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +60,14 @@ class ProfileActivity : ComponentActivity() {
 fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Boolean) -> Unit) {
     val navController = rememberNavController()
     val context = LocalContext.current
-    val initialProfile = remember { Persistence.loadProfile(context) ?: ProfileData() }
+    val initialProfile = remember {
+        Persistence.loadProfile(context) ?: ProfileData(
+            userId = UUID.randomUUID().toString(),
+            userName = "Гость",
+            email = "example@email.com",
+            phone = null
+        )
+    }
     var profile by remember { mutableStateOf(initialProfile) }
 
     NavHost(navController = navController, startDestination = "profile") {
@@ -120,7 +128,7 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                         text = buildAnnotatedString {
                             append("Имя: ")
                             pushStyle(SpanStyle(fontStyle = FontStyle.Italic))
-                            append(profile.username)
+                            append(profile.userName)
                             pop()
                         },
                         style = TextStyle(fontSize = textSize, color = MaterialTheme.colorScheme.onSurface)

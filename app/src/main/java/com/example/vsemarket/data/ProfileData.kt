@@ -9,5 +9,6 @@ data class ProfileData(
     @PrimaryKey val userId: String,
     val userName: String,
     val email: String,
-    val phone: String?
+    val phone: String?,
+    val avatarUri: String? = null
 )

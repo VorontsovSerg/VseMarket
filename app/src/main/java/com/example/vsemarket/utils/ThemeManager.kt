@@ -38,10 +38,10 @@ object ThemeManager {
     ) {
         val colorScheme = if (isDarkTheme) {
             darkColorScheme(
-                primary = Color(0xFFFFB300),
-                onPrimary = Color.Black,
-                primaryContainer = Color(0xFFFFB300),
-                onPrimaryContainer = Color.Black,
+                primary = Color(0xFF0288D1),
+                onPrimary = Color.White,
+                primaryContainer = Color(0xFF0288D1),
+                onPrimaryContainer = Color.White,
                 background = Color(0xFF1C1C1C),
                 onBackground = Color.White,
                 surface = Color(0xFF1C1C1C),
@@ -49,10 +49,10 @@ object ThemeManager {
             )
         } else {
             lightColorScheme(
-                primary = Color(0xFFFFC107),
-                onPrimary = Color.Black,
-                primaryContainer = Color(0xFFFFC107),
-                onPrimaryContainer = Color.Black,
+                primary = Color(0xFF03A9F4),
+                onPrimary = Color.White,
+                primaryContainer = Color(0xFF03A9F4),
+                onPrimaryContainer = Color.White,
                 background = Color.White,
                 onBackground = Color.Black,
                 surface = Color.White,
