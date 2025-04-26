@@ -1,10 +1,13 @@
 package com.example.vsemarket.data
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "users")
 data class ProfileData(
-    @SerializedName("avatarUri") val avatarUri: String? = null,
-    @SerializedName("username") val username: String = "Имя пользователя",
-    @SerializedName("email") val email: String = "email@example.com",
-    @SerializedName("phone") val phone: String? = null
+    @PrimaryKey val userId: String,
+    val userName: String,
+    val email: String,
+    val phone: String?
 )

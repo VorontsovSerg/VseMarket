@@ -1,5 +1,8 @@
 package com.example.vsemarket.data
 
+import androidx.room.Entity
+
+@Entity(tableName = "products")
 data class Product(
     val id: Int,
     val name: String,
