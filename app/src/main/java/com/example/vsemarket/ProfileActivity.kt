@@ -1,5 +1,6 @@
 package com.example.vsemarket
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,12 +33,8 @@ import com.example.vsemarket.data.Persistence
 import com.example.vsemarket.data.ProfileData
 import com.example.vsemarket.ui.screens.EditProfileScreen
 import com.example.vsemarket.utils.ThemeManager
+import com.google.firebase.auth.FirebaseAuth
 import java.util.UUID
-
-/**
- * Активность профиля пользователя.
- * Позволяет просматривать и редактировать информацию о пользователе.
- */
 
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,12 +62,15 @@ class ProfileActivity : ComponentActivity() {
 fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Boolean) -> Unit) {
     val navController = rememberNavController()
     val context = LocalContext.current
+    val auth = FirebaseAuth.getInstance()
     val initialProfile = remember {
         Persistence.loadProfile(context) ?: ProfileData(
             userId = UUID.randomUUID().toString(),
             userName = "Гость",
             email = "example@email.com",
-            phone = null
+            phone = null,
+            avatarUri = null,
+            isEmailVerified = false
         )
     }
     var profile by remember { mutableStateOf(initialProfile) }
@@ -145,6 +145,9 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                             append("Email: ")
                             pushStyle(SpanStyle(fontStyle = FontStyle.Italic))
                             append(profile.email)
+                            append(" (")
+                            append(if (profile.isEmailVerified) "подтвержден" else "не подтвержден")
+                            append(")")
                             pop()
                         },
                         style = TextStyle(fontSize = textSize, color = MaterialTheme.colorScheme.onSurface)
@@ -174,6 +177,22 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                         style = TextStyle(fontSize = textSize, color = MaterialTheme.colorScheme.onSurface),
                         modifier = Modifier.align(Alignment.Start)
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            auth.signOut()
+                            Persistence.clearProfile(context)
+                            context.startActivity(Intent(context, AuthActivity::class.java))
+                            (context as ProfileActivity).finish()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text("Выйти")
+                    }
                 }
             }
         }

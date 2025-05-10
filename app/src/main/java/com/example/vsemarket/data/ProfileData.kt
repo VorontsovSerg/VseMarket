@@ -15,5 +15,7 @@ data class ProfileData(
     val userName: String,
     val email: String,
     val phone: String?,
-    val avatarUri: String? = null
+    val avatarUri: String? = null,
+
+    val isEmailVerified: Boolean = false
 )
