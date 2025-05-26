@@ -1,37 +1,32 @@
 package com.example.vsemarket.ui.screens
 
-import androidx.compose.foundation.BorderStroke
+import android.content.Intent
+import android.util.Log
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.example.vsemarket.data.CartItem
-import com.example.vsemarket.viewmodel.CartViewModel
-import androidx.compose.foundation.Canvas
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import android.content.Intent
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.example.vsemarket.PaymentActivity
-
-/**
- * Фрагмент отображения корзины пользователя.
- * Отвечает за отображение списка товаров в корзине, изменение количества и удаление товаров.
- */
+import com.example.vsemarket.data.CartItem
+import com.example.vsemarket.data.Persistence
+import com.example.vsemarket.viewmodel.CartViewModel
 
 @Composable
 fun CartScreen(viewModel: CartViewModel) {
@@ -72,8 +67,8 @@ fun CartScreen(viewModel: CartViewModel) {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     itemsIndexed(cartItems) { index, item ->
-                        CartItemRow(item, viewModel, cartItems.size > 1, index + 1)
-                        if (index < cartItems.size - 1 && cartItems.size > 1) {
+                        CartItemRow(item, viewModel, true, index + 1)
+                        if (index < cartItems.size - 1) {
                             DashedDivider(
                                 color = MaterialTheme.colorScheme.onSurface,
                                 thickness = 1.dp,
@@ -96,7 +91,22 @@ fun CartScreen(viewModel: CartViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    context.startActivity(Intent(context, PaymentActivity::class.java))
+                    try {
+                        Persistence.saveCart(context, cartItems) // Save cartItems
+                        val intent = Intent(context, PaymentActivity::class.java).apply {
+                            putExtra("totalPrice", totalPrice)
+                            // Temporarily avoid passing cartItems directly
+                            // putExtra("cartItems", ArrayList(cartItems))
+                        }
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        Log.e("CartScreen", "Failed to start PaymentActivity", e)
+                        android.widget.Toast.makeText(
+                            context,
+                            "Ошибка при переходе к оплате: ${e.message}",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.onBackground,
@@ -129,61 +139,52 @@ fun CartItemRow(cartItem: CartItem, viewModel: CartViewModel, showQuantityButton
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "$itemNumber. ${cartItem.product.name}",
+                text = "$itemNumber. ${cartItem.title}",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = "${cartItem.product.price} ₽",
+                text = "${cartItem.price} ₽",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
 
-        if (showQuantityButtons) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "−",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clickable {
-                            if (quantity > 1) {
-                                quantity--
-                                viewModel.updateQuantity(cartItem.product.id, -1)
-                            } else {
-                                viewModel.removeFromCart(cartItem.product.id)
-                                quantity = 0
-                            }
-                        }
-                )
-                Text(
-                    text = "$quantity",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "+",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clickable {
-                            quantity++
-                            viewModel.updateQuantity(cartItem.product.id, 1)
-                        }
-                )
-            }
-        } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Text(
-                text = "$quantity шт.",
-                style = MaterialTheme.typography.bodyMedium,
+                text = "−",
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable {
+                        if (quantity > 1) {
+                            quantity--
+                            viewModel.updateQuantity(cartItem.id, -1)
+                        } else {
+                            viewModel.removeFromCart(cartItem.id)
+                            quantity = 0
+                        }
+                    }
+            )
+            Text(
+                text = "$quantity",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "+",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable {
+                        quantity++
+                        viewModel.updateQuantity(cartItem.id, 1)
+                    }
             )
         }
 
@@ -203,7 +204,7 @@ fun CartItemRow(cartItem: CartItem, viewModel: CartViewModel, showQuantityButton
                 DropdownMenuItem(
                     text = { Text("Удалить", color = MaterialTheme.colorScheme.onSurface) },
                     onClick = {
-                        viewModel.removeFromCart(cartItem.product.id)
+                        viewModel.removeFromCart(cartItem.id)
                         expanded = false
                     }
                 )

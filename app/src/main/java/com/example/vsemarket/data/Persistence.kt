@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 import java.util.UUID
 
 /**
- * Объект для управления сохранением и загрузкой данных профиля, корзины и истории поиска.
+ * Объект для управления сохранением и загрузкой данных профиля, корзины, истории поиска и заказов.
  */
 object Persistence {
     private const val PROFILE_PREFS = "profile_prefs"
@@ -16,6 +16,10 @@ object Persistence {
     private const val SEARCH_HISTORY_KEY = "search_history"
     private const val CART_PREFS = "cart_prefs"
     private const val CART_KEY = "cart"
+    private const val ORDERS_PREFS = "orders_prefs"
+    private const val ORDERS_KEY = "orders"
+
+    private val gson = Gson()
 
     /**
      * Сохраняет данные профиля в SharedPreferences.
@@ -23,7 +27,7 @@ object Persistence {
     fun saveProfile(context: Context, profile: ProfileData) {
         val prefs = context.getSharedPreferences(PROFILE_PREFS, Context.MODE_PRIVATE)
         val editor = prefs.edit()
-        val json = Gson().toJson(profile)
+        val json = gson.toJson(profile)
         editor.putString(KEY_PROFILE, json)
         editor.apply()
     }
@@ -35,7 +39,7 @@ object Persistence {
         val prefs = context.getSharedPreferences(PROFILE_PREFS, Context.MODE_PRIVATE)
         val json = prefs.getString(KEY_PROFILE, null)
         return if (json != null) {
-            Gson().fromJson(json, ProfileData::class.java)
+            gson.fromJson(json, ProfileData::class.java)
         } else {
             val firebaseUser = FirebaseAuth.getInstance().currentUser
             firebaseUser?.let {
@@ -65,7 +69,6 @@ object Persistence {
     fun saveSearchHistory(context: Context, history: List<String>) {
         val prefs = context.getSharedPreferences(SEARCH_HISTORY_PREFS, Context.MODE_PRIVATE)
         val editor = prefs.edit()
-        val gson = Gson()
         val json = gson.toJson(history.take(10))
         editor.putString(SEARCH_HISTORY_KEY, json)
         editor.apply()
@@ -76,7 +79,6 @@ object Persistence {
      */
     fun loadSearchHistory(context: Context): List<String> {
         val prefs = context.getSharedPreferences(SEARCH_HISTORY_PREFS, Context.MODE_PRIVATE)
-        val gson = Gson()
         val json = prefs.getString(SEARCH_HISTORY_KEY, null) ?: return emptyList()
         val type = object : TypeToken<List<String>>() {}.type
         return gson.fromJson(json, type) ?: emptyList()
@@ -96,7 +98,6 @@ object Persistence {
     fun saveCart(context: Context, cartItems: List<CartItem>) {
         val prefs = context.getSharedPreferences(CART_PREFS, Context.MODE_PRIVATE)
         val editor = prefs.edit()
-        val gson = Gson()
         val json = gson.toJson(cartItems)
         editor.putString(CART_KEY, json)
         editor.apply()
@@ -107,9 +108,37 @@ object Persistence {
      */
     fun loadCart(context: Context): List<CartItem> {
         val prefs = context.getSharedPreferences(CART_PREFS, Context.MODE_PRIVATE)
-        val gson = Gson()
         val json = prefs.getString(CART_KEY, null) ?: return emptyList()
         val type = object : TypeToken<List<CartItem>>() {}.type
         return gson.fromJson(json, type) ?: emptyList()
+    }
+
+    /**
+     * Сохраняет список заказов в SharedPreferences.
+     */
+    fun saveOrders(context: Context, orders: List<Order>) {
+        val prefs = context.getSharedPreferences(ORDERS_PREFS, Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        val json = gson.toJson(orders)
+        editor.putString(ORDERS_KEY, json)
+        editor.apply()
+    }
+
+    /**
+     * Загружает список заказов из SharedPreferences.
+     */
+    fun loadOrders(context: Context): List<Order> {
+        val prefs = context.getSharedPreferences(ORDERS_PREFS, Context.MODE_PRIVATE)
+        val json = prefs.getString(ORDERS_KEY, null) ?: return emptyList()
+        val type = object : TypeToken<List<Order>>() {}.type
+        return gson.fromJson(json, type) ?: emptyList()
+    }
+
+    /**
+     * Очищает список заказов из SharedPreferences.
+     */
+    fun clearOrders(context: Context) {
+        val prefs = context.getSharedPreferences(ORDERS_PREFS, Context.MODE_PRIVATE)
+        prefs.edit().remove(ORDERS_KEY).apply()
     }
 }

@@ -1,9 +1,15 @@
 package com.example.vsemarket
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,54 +19,69 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.vsemarket.data.CartItem
+import com.example.vsemarket.data.Order
+import com.example.vsemarket.data.Persistence
 import com.example.vsemarket.utils.ThemeManager
-
-/**
- * Активность для обработки процесса оплаты.
- * Отображает интерфейс оплаты и обрабатывает действия пользователя.
- */
+import com.example.vsemarket.viewmodel.CartViewModel
+import kotlin.random.Random
 
 class PaymentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createNotificationChannel()
         setContent {
             val context = LocalContext.current
             val isDarkTheme = remember { mutableStateOf(ThemeManager.isDarkTheme(context)) }
             val totalPrice = intent.getDoubleExtra("totalPrice", 0.0)
+            val cartItems = Persistence.loadCart(context)
 
             ThemeManager.FoodDeliveryTheme(isDarkTheme = isDarkTheme.value) {
-                PaymentNavigation(totalPrice)
+                PaymentNavigation(totalPrice, cartItems)
             }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Order Notifications"
+            val descriptionText = "Notifications for order updates"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("order_channel", name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 }
 
 @Composable
-fun PaymentNavigation(totalPrice: Double) {
+fun PaymentNavigation(totalPrice: Double, cartItems: List<CartItem>) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "main") {
-        composable("main") { PaymentMainScreen(navController, totalPrice) }
-        composable("sbp") { SbpPaymentScreen(totalPrice) }
-        composable("card") { CardPaymentScreen(totalPrice) }
+        composable("main") { PaymentMainScreen(navController, totalPrice, cartItems) }
+        composable("sbp") { SbpPaymentScreen(totalPrice, cartItems) }
+        composable("card") { CardPaymentScreen(totalPrice, cartItems) }
     }
 }
 
 @Composable
-fun PaymentMainScreen(navController: NavController, totalPrice: Double) {
+fun PaymentMainScreen(navController: NavController, totalPrice: Double, cartItems: List<CartItem>) {
     var address by remember { mutableStateOf("") }
     var paymentMethod by remember { mutableStateOf("card") }
 
@@ -105,10 +126,9 @@ fun PaymentMainScreen(navController: NavController, totalPrice: Double) {
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                Icons.Default.MonetizationOn,
+            Image(
+                painter = painterResource(id = R.drawable.sbp),
                 contentDescription = "СБП",
-                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -192,9 +212,14 @@ fun PaymentMainScreen(navController: NavController, totalPrice: Double) {
 }
 
 @Composable
-fun SbpPaymentScreen(totalPrice: Double) {
+fun SbpPaymentScreen(totalPrice: Double, cartItems: List<CartItem>) {
     val context = LocalContext.current
-    val banks = listOf("Сбербанк", "Т-Банк", "Альфа-Банк", "ВТБ")
+    val banks = listOf(
+        Bank("Сбербанк", R.drawable.sber),
+        Bank("Т-Банк", R.drawable.tbank),
+        Bank("Альфа-Банк", R.drawable.alpha),
+        Bank("ВТБ", R.drawable.vtb)
+    )
     var selectedBank by remember { mutableStateOf("") }
 
     Column(
@@ -221,33 +246,32 @@ fun SbpPaymentScreen(totalPrice: Double) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { selectedBank = bank }
+                        .clickable { selectedBank = bank.name }
                         .padding(8.dp)
                         .border(
                             1.dp,
-                            if (selectedBank == bank) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            if (selectedBank == bank.name) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                             MaterialTheme.shapes.small
                         )
                         .background(MaterialTheme.colorScheme.surface)
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Default.AccountBalance,
-                        contentDescription = bank,
-                        tint = MaterialTheme.colorScheme.onSurface,
+                    Image(
+                        painter = painterResource(id = bank.iconResId),
+                        contentDescription = bank.name,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = bank,
+                        text = bank.name,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     RadioButton(
-                        selected = selectedBank == bank,
-                        onClick = { selectedBank = bank },
+                        selected = selectedBank == bank.name,
+                        onClick = { selectedBank = bank.name },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = MaterialTheme.colorScheme.primary,
                             unselectedColor = MaterialTheme.colorScheme.onSurface
@@ -267,7 +291,28 @@ fun SbpPaymentScreen(totalPrice: Double) {
 
         Button(
             onClick = {
-                Toast.makeText(context, "СБП пока не работает", Toast.LENGTH_SHORT).show()
+                if (cartItems.isEmpty()) {
+                    showNotification(
+                        context,
+                        "Ошибка заказа",
+                        "Корзина пуста, заказ не создан",
+                        Random.nextInt()
+                    )
+                    return@Button
+                }
+                val orderNumber = "#${Random.nextLong(10000000000, 99999999999)}"
+                val order = Order(orderNumber, totalPrice, "В обработке", cartItems)
+                val orders = Persistence.loadOrders(context).toMutableList()
+                orders.add(order)
+                Persistence.saveOrders(context, orders)
+                CartViewModel(context).clearCart()
+                showNotification(
+                    context,
+                    "Заказ создан",
+                    "Заказ $orderNumber создан и находится в обработке",
+                    Random.nextInt()
+                )
+                (context as PaymentActivity).finish()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -286,8 +331,10 @@ fun SbpPaymentScreen(totalPrice: Double) {
     }
 }
 
+data class Bank(val name: String, val iconResId: Int)
+
 @Composable
-fun CardPaymentScreen(totalPrice: Double) {
+fun CardPaymentScreen(totalPrice: Double, cartItems: List<CartItem>) {
     var cardNumber by remember { mutableStateOf("") }
     var expiryDate by remember { mutableStateOf("") }
     var cvv by remember { mutableStateOf("") }
@@ -372,7 +419,28 @@ fun CardPaymentScreen(totalPrice: Double) {
 
         Button(
             onClick = {
-                Toast.makeText(context, "Оплата картой пока не доступна", Toast.LENGTH_SHORT).show()
+                if (cartItems.isEmpty()) {
+                    showNotification(
+                        context,
+                        "Ошибка заказа",
+                        "Корзина пуста, заказ не создан",
+                        Random.nextInt()
+                    )
+                    return@Button
+                }
+                val orderNumber = "#${Random.nextLong(10000000000, 99999999999)}"
+                val order = Order(orderNumber, totalPrice, "В обработке", cartItems)
+                val orders = Persistence.loadOrders(context).toMutableList()
+                orders.add(order)
+                Persistence.saveOrders(context, orders)
+                CartViewModel(context).clearCart()
+                showNotification(
+                    context,
+                    "Заказ создан",
+                    "Заказ $orderNumber создан и находится в обработке",
+                    Random.nextInt()
+                )
+                (context as PaymentActivity).finish()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -389,4 +457,28 @@ fun CardPaymentScreen(totalPrice: Double) {
             )
         }
     }
+}
+
+private fun showNotification(context: Context, title: String, content: String, notificationId: Int) {
+    val intent = Intent(context, ProfileActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
+    val pendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val builder = NotificationCompat.Builder(context, "order_channel")
+        .setSmallIcon(android.R.drawable.ic_dialog_info)
+        .setContentTitle(title)
+        .setContentText(content)
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        .setContentIntent(pendingIntent)
+        .setAutoCancel(true)
+
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    notificationManager.notify(notificationId, builder.build())
 }

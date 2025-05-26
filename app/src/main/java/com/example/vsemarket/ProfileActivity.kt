@@ -1,15 +1,25 @@
 package com.example.vsemarket
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,20 +35,25 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationCompat
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.vsemarket.data.Order
 import com.example.vsemarket.data.Persistence
 import com.example.vsemarket.data.ProfileData
 import com.example.vsemarket.ui.screens.EditProfileScreen
 import com.example.vsemarket.utils.ThemeManager
 import com.google.firebase.auth.FirebaseAuth
 import java.util.UUID
+import kotlin.random.Random
 
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createNotificationChannel()
         setContent {
             val context = LocalContext.current
             val isDarkTheme = remember { mutableStateOf(ThemeManager.isDarkTheme(context)) }
@@ -54,6 +69,19 @@ class ProfileActivity : ComponentActivity() {
                     }
                 )
             }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Order Notifications"
+            val descriptionText = "Notifications for order updates"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("order_channel", name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 }
@@ -127,6 +155,7 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .weight(1f)
                         .align(Alignment.Start)
                 ) {
                     Text(
@@ -165,6 +194,18 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    Button(
+                        onClick = { navController.navigate("orders") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text("Мои Заказы")
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     Switch(
                         checked = isDarkTheme,
                         onCheckedChange = { checked ->
@@ -177,22 +218,24 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                         style = TextStyle(fontSize = textSize, color = MaterialTheme.colorScheme.onSurface),
                         modifier = Modifier.align(Alignment.Start)
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
-                    Button(
-                        onClick = {
-                            auth.signOut()
-                            Persistence.clearProfile(context)
-                            context.startActivity(Intent(context, AuthActivity::class.java))
-                            (context as ProfileActivity).finish()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text("Выйти")
-                    }
+                Button(
+                    onClick = {
+                        auth.signOut()
+                        Persistence.clearProfile(context)
+                        context.startActivity(Intent(context, AuthActivity::class.java))
+                        (context as ProfileActivity).finish()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text("Выйти")
                 }
             }
         }
@@ -205,5 +248,184 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                 }
             )
         }
+        composable("orders") {
+            OrdersScreen(navController)
+        }
     }
+}
+
+@Composable
+fun OrdersScreen(navController: NavController) {
+    val context = LocalContext.current
+    var orders by remember { mutableStateOf(Persistence.loadOrders(context)) }
+    var showDialog by remember { mutableStateOf<String?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Мои Заказы",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (orders.isEmpty()) {
+            Text(
+                text = "Нет заказов",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(orders) { order ->
+                    OrderCard(
+                        order = order,
+                        onDelete = { showDialog = order.orderNumber }
+                    )
+                }
+            }
+        }
+
+        if (showDialog != null) {
+            AlertDialog(
+                onDismissRequest = { showDialog = null },
+                title = { Text("Подтверждение") },
+                text = { Text("Вы действительно хотите удалить заказ ${showDialog}?") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            val orderNumber = showDialog!!
+                            orders = orders.filter { it.orderNumber != orderNumber }
+                            Persistence.saveOrders(context, orders)
+                            showNotification(
+                                context,
+                                "Заказ удален",
+                                "Заказ $orderNumber отменен",
+                                Random.nextInt()
+                            )
+                            showDialog = null
+                        }
+                    ) {
+                        Text("Удалить")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showDialog = null }) {
+                        Text("Отмена")
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun OrderCard(order: Order, onDelete: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.onSurface, MaterialTheme.shapes.medium)
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Заказ: ${order.orderNumber}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.weight(1f)
+                )
+                Box {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "More options",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Удалить", color = MaterialTheme.colorScheme.onSurface) },
+                            onClick = {
+                                onDelete()
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            Text(
+                text = "Сумма: ${order.totalPrice} ₽",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "Статус: ${order.status}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Товары:",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            order.items.forEach { item ->
+                Text(
+                    text = "- ${item.title} (${item.quantity} шт.)",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+private fun showNotification(context: Context, title: String, content: String, notificationId: Int) {
+    val intent = Intent(context, ProfileActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
+    val pendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val builder = NotificationCompat.Builder(context, "order_channel")
+        .setSmallIcon(android.R.drawable.ic_dialog_info)
+        .setContentTitle(title)
+        .setContentText(content)
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        .setContentIntent(pendingIntent)
+        .setAutoCancel(true)
+
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    notificationManager.notify(notificationId, builder.build())
 }
