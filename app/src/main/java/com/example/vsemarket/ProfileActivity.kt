@@ -7,16 +7,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
@@ -25,12 +26,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -74,8 +74,8 @@ class ProfileActivity : ComponentActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Order Notifications"
-            val descriptionText = "Notifications for order updates"
+            val name = "Уведомления о заказах"
+            val descriptionText = "Уведомления об обновлениях заказов"
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel("order_channel", name, importance).apply {
                 description = descriptionText
@@ -87,7 +87,11 @@ class ProfileActivity : ComponentActivity() {
 }
 
 @Composable
-fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Boolean) -> Unit) {
+fun ProfileScreen(
+    textSize: TextUnit,
+    isDarkTheme: Boolean,
+    onThemeChange: (Boolean) -> Unit
+) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
@@ -99,7 +103,9 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
             phone = null,
             avatarUri = null,
             isEmailVerified = false
-        )
+        ).also {
+            Log.d("ProfileScreen", "Initial profile loaded: avatarUri = ${it.avatarUri}")
+        }
     }
     var profile by remember { mutableStateOf(initialProfile) }
 
@@ -116,36 +122,90 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
+                    Button(
+                        onClick = {
+                            val user = auth.currentUser
+                            if (user == null) {
+                                context.startActivity(Intent(context, AuthActivity::class.java))
+                            } else {
+                                val intent = Intent(context, SellerActivity::class.java).apply {
+                                    putExtra("userEmail", user.email)
+                                }
+                                context.startActivity(intent)
+                            }
+                        },
+                        modifier = Modifier
+                            .height(48.dp)
+                            .wrapContentWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = Color.White
+                        ),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            Color(0xFF2196F3), // Синий
+                                            Color(0xFF21CBF3)  // Голубой
+                                        ),
+                                        start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                                        end = androidx.compose.ui.geometry.Offset(100f, 100f)
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Панель продавца",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(170.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (profile.avatarUri != null) {
+                            Image(
+                                painter = rememberAsyncImagePainter(profile.avatarUri),
+                                contentDescription = "Аватар профиля",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Text(
+                                text = "Нет аватара",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
                     IconButton(
                         onClick = { navController.navigate("editProfile") }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Profile",
+                            contentDescription = "Редактировать профиль",
                             tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .size(150.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (profile.avatarUri != null) {
-                        Image(
-                            painter = rememberAsyncImagePainter(profile.avatarUri),
-                            contentDescription = "Profile Avatar",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        Text(
-                            text = "Нет аватара",
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
@@ -245,6 +305,8 @@ fun ProfileScreen(textSize: TextUnit, isDarkTheme: Boolean, onThemeChange: (Bool
                 initialProfile = profile,
                 onProfileUpdated = { updatedProfile ->
                     profile = updatedProfile
+                    Persistence.saveProfile(context, updatedProfile) // Сохраняем профиль
+                    Log.d("ProfileScreen", "Profile updated: avatarUri = ${updatedProfile.avatarUri}")
                 }
             )
         }
@@ -300,7 +362,7 @@ fun OrdersScreen(navController: NavController) {
             AlertDialog(
                 onDismissRequest = { showDialog = null },
                 title = { Text("Подтверждение") },
-                text = { Text("Вы действительно хотите удалить заказ ${showDialog}?") },
+                text = { Text("Вы действительно хотите удалить заказ $showDialog?") },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -355,26 +417,28 @@ fun OrderCard(order: Order, onDelete: () -> Unit) {
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f)
                 )
-                Box {
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(
-                            Icons.Default.MoreVert,
-                            contentDescription = "More options",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Удалить", color = MaterialTheme.colorScheme.onSurface) },
-                            onClick = {
-                                onDelete()
-                                expanded = false
-                            }
-                        )
+                if (order.status == "В обработке") {
+                    Box {
+                        IconButton(onClick = { expanded = true }) {
+                            Icon(
+                                Icons.Default.MoreVert,
+                                contentDescription = "Дополнительные опции",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Удалить", color = MaterialTheme.colorScheme.onSurface) },
+                                onClick = {
+                                    onDelete()
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }

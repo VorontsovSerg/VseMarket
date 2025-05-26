@@ -20,7 +20,7 @@ class SearchViewModel(private val api: ProductApi) : ViewModel() {
             try {
                 val results = api.searchProducts(query)
                 _searchResults.value = results
-                _searchError.value = null // Очищаем ошибку при успехе
+                _searchError.value = null
             } catch (e: Exception) {
                 _searchResults.value = emptyList()
                 _searchError.value = "Не удалось выполнить поиск: ${e.message}"

@@ -5,15 +5,15 @@ package com.example.vsemarket.data
  * Может использоваться для хранения временных данных или моков.
  */
 object ProductData {
-    val products = listOf(
+    val products: MutableList<Product> = mutableListOf(
         // Категория: Базар
         Product(
             id = 1,
             name = "Яблоко",
             price = 10.0,
             images = listOf(
-                "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
-                "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6"
+                "https://avatars.mds.yandex.net/i?id=ce0e1ec2b49fc9007e026aae1c6b60480bbae7d6-12610597-images-thumbs&n=13",
+                "https://avatars.mds.yandex.net/i?id=09226b60ab39299434f46998e3d414bef23289fa-7930431-images-thumbs&ref=rim&n=33&w=200&h=200"
             ),
             category = "Базар",
             subcategory = "Фрукты",
@@ -29,8 +29,8 @@ object ProductData {
             name = "Груша",
             price = 12.0,
             images = listOf(
-                "https://images.unsplash.com/photo-1606820732558-2eadae7c68e8",
-                "https://images.unsplash.com/photo-1547517023-7ca0c162f816"
+                "https://images.unsplash.com/photo-1577140920937-7c4c6d52f9d4",
+                "https://images.unsplash.com/photo-1606820732558-2eadae7c68e8"
             ),
             category = "Базар",
             subcategory = "Фрукты",
@@ -761,7 +761,7 @@ object ProductData {
         )
     )
 
-    val categories = listOf(
+    val categories: MutableList<Category> = mutableListOf(
         Category(
             name = "Базар",
             subcategories = listOf(

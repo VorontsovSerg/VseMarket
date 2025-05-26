@@ -58,8 +58,8 @@ class PaymentActivity : ComponentActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Order Notifications"
-            val descriptionText = "Notifications for order updates"
+            val name = "Уведомления о заказах"
+            val descriptionText = "Уведомления об обновлениях заказов"
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel("order_channel", name, importance).apply {
                 description = descriptionText
@@ -306,10 +306,11 @@ fun SbpPaymentScreen(totalPrice: Double, cartItems: List<CartItem>) {
                 orders.add(order)
                 Persistence.saveOrders(context, orders)
                 CartViewModel(context).clearCart()
+                Persistence.saveCart(context, emptyList()) // Явная очистка корзины
                 showNotification(
                     context,
                     "Заказ создан",
-                    "Заказ $orderNumber создан и находится в обработке",
+                    "Заказ $orderNumber создан, корзина очищена",
                     Random.nextInt()
                 )
                 (context as PaymentActivity).finish()
@@ -338,7 +339,7 @@ fun CardPaymentScreen(totalPrice: Double, cartItems: List<CartItem>) {
     var cardNumber by remember { mutableStateOf("") }
     var expiryDate by remember { mutableStateOf("") }
     var cvv by remember { mutableStateOf("") }
-    var cardHolder by remember { mutableStateOf("") }
+    var cardHolderName by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Column(
@@ -398,8 +399,8 @@ fun CardPaymentScreen(totalPrice: Double, cartItems: List<CartItem>) {
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = cardHolder,
-            onValueChange = { cardHolder = it },
+            value = cardHolderName,
+            onValueChange = { cardHolderName = it },
             label = { Text("Имя владельца") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -434,10 +435,11 @@ fun CardPaymentScreen(totalPrice: Double, cartItems: List<CartItem>) {
                 orders.add(order)
                 Persistence.saveOrders(context, orders)
                 CartViewModel(context).clearCart()
+                Persistence.saveCart(context, emptyList()) // Явная очистка корзины
                 showNotification(
                     context,
                     "Заказ создан",
-                    "Заказ $orderNumber создан и находится в обработке",
+                    "Заказ $orderNumber создан, корзина очищена",
                     Random.nextInt()
                 )
                 (context as PaymentActivity).finish()
@@ -475,7 +477,7 @@ private fun showNotification(context: Context, title: String, content: String, n
         .setContentTitle(title)
         .setContentText(content)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
 

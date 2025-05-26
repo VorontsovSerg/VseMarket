@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.androidx.datastore.core.android)
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
