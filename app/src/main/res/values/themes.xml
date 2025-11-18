@@ -1,12 +1,12 @@
 <resources>
-    <style name="Theme.VseMarket." parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/blue_primary</item>
-        <item name="colorOnPrimary">@color/blue_on_primary</item>
-        <item name="colorPrimaryContainer">@color/blue_primary</item>
-        <item name="colorOnPrimaryContainer">@color/blue_on_primary</item>
-        <item name="android:colorBackground">@color/blue_background</item>
-        <item name="colorOnBackground">@color/blue_on_background</item>
-        <item name="colorSurface">@color/blue_surface</item>
-        <item name="colorOnSurface">@color/blue_on_surface</item>
+    <style name="Theme.FoodDelivery." parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/yellow_primary</item>
+        <item name="colorOnPrimary">@color/yellow_on_primary</item>
+        <item name="colorPrimaryContainer">@color/yellow_primary</item>
+        <item name="colorOnPrimaryContainer">@color/yellow_on_primary</item>
+        <item name="android:colorBackground">@color/yellow_background</item>
+        <item name="colorOnBackground">@color/yellow_on_background</item>
+        <item name="colorSurface">@color/yellow_surface</item>
+        <item name="colorOnSurface">@color/yellow_on_surface</item>
     </style>
 </resources>

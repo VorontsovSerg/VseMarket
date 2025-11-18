@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.vsemarket"
+    namespace = "com.example.fooddelivery"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.vsemarket"
+        applicationId = "com.example.fooddelivery"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -45,9 +45,6 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
-    implementation("com.google.firebase:firebase-analytics")
-
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
@@ -77,8 +74,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.androidx.datastore.core.android)
     implementation(libs.androidx.room.common.jvm)
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

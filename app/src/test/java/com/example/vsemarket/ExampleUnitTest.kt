@@ -1,4 +1,4 @@
-package com.example.vsemarket
+package com.example.fooddelivery
 
 import org.junit.Test
 
